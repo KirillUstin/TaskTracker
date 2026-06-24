@@ -1,4 +1,4 @@
-package main.java.com.kirk;
+package com.kirk;
 
 import java.io.Serializable;
 import java.time.LocalDate;

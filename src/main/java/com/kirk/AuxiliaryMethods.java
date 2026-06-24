@@ -1,4 +1,4 @@
-package main.java.com.kirk;
+package com.kirk;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

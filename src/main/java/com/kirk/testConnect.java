@@ -1,4 +1,4 @@
-package main.java.com.kirk;
+package com.kirk;
 
 import java.sql.Connection;
 import java.sql.SQLException;

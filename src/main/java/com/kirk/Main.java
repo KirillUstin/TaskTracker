@@ -1,4 +1,4 @@
-package main.java.com.kirk;
+package com.kirk;
 
 public class Main{
     public static void main(String[] args) {

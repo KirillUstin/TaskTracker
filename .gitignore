@@ -18,4 +18,6 @@ Thumbs.db
 out/
 /out/
 
+/target/
+
 tasks.dat
