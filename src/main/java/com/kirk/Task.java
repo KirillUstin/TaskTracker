@@ -34,22 +34,6 @@ public class Task implements Serializable {
         return completed;
     }
 
-    public void setTitle(String t){
-        this.title = t;
-    }
-    public void setDescription(String d){
-        this.description = d;
-    }
-    public void setDueDate(LocalDate dd){
-        this.dueDate = dd;
-    }
-    public void setPriority(int p){
-        this.priority = p;
-    }
-    public void setCompleted(boolean c){
-        this.completed = c;
-    }
-
     public void markCompleted(){
         this.completed = true;
     }

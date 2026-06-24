@@ -6,11 +6,10 @@ public class Main{
         AuxiliaryMethods auxMethods = new AuxiliaryMethods();
 
         testConnect.main();
-
         
         while(true){
             auxMethods.showMenu();
-            int choice = auxMethods.inputAndCheckChoice();
+            int choice = auxMethods.inputChoice();
 
             switch (choice) {
                 case 1:

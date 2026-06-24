@@ -1,6 +1,5 @@
 package com.kirk;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import java.sql.SQLException;
@@ -15,40 +14,61 @@ public class AuxiliaryMethods {
 
     //вывод меню (для главной функции main)
     public void showMenu(){
-        System.out.println("-----Меню-----");
-        System.out.println("1) Добавить задачу");
-        System.out.println("2) Вывести список всех задач");
-        System.out.println("3) Завершить задачу");
-        System.out.println("4) Удалить задачу");
-        System.out.println("5) Редактировать задачу");
-        System.out.println("6) Отсортировать задачи по приоритету");
-        System.out.println("7) Отсортировать задачи по дате, до которой надо выполнить");
-        System.out.println("0) Выход");
-        System.out.print("Выберите действие:");
+        System.out.print("""
+        \n-----Меню-----
+        1) Добавить задачу
+        2) Вывести список всех задач
+        3) Завершить задачу
+        4) Удалить задачу
+        5) Редактировать задачу
+        6) Отсортировать задачи по приоритету
+        7) Отсортировать задачи по дате, до которой надо выполнить
+        0) Выход
+        Выберите действие:""");
     }
 
-    //ввод и проверка введенного значения для взаимодействия с консолью (для главной функции main)
-    public int inputAndCheckChoice(){
-        int choice;
-        while(true){
-            try {
-                choice = scanner.nextInt();
-                scanner.nextLine();
+    //ввод значения для взаимодействия с консолью (для главной функции main)
+    public int inputChoice(){
+        Integer choice = 0;
+        String entered_string = null;
+        boolean valid_number = false;
 
-                if(choice >= 0 && choice <= 7){
-                    break;
-                } else{
-                    System.out.println("Число не должно быть меньше 0 и больше 7!\nВведите число заново:");
-                }
+        while(!valid_number){
+            entered_string = scanner.nextLine();
 
-            } catch (InputMismatchException e) {
-                System.out.println("Ошибка! Неверный формат ввода. Введите число от 0 до 7.");
-                scanner.nextLine();
-            }
+            choice = parseInputChoice(entered_string);
 
+            valid_number = checkChoice(choice);
         }
         
         return choice;
+    }
+
+    public Integer parseInputChoice(String input){
+        Integer parseInt = null;
+        
+        try{
+            parseInt = Integer.parseInt(input);
+        } catch(NumberFormatException e){
+            System.out.println("Ошибка! Неверный формат ввода. Введите число от 0 до 7.");
+            System.out.println(e.getMessage());
+        }
+        
+        return parseInt;
+    }
+    
+    //проверка значения для взаимодействия с консолью (для функции inputChoice)
+    public boolean checkChoice(Integer choice){
+        if(choice == null){
+            return false;
+        }
+
+        if(choice >= 0 && choice <= 7){
+            return true;
+        } else{
+            System.out.println("Число не должно быть меньше 0 и больше 7!\nВведите число заново:");
+            return false;
+        }
     }
 
     //ввод приоритетности и проверка
