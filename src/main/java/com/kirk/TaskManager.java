@@ -5,12 +5,8 @@ import java.sql.SQLException;
 
 import java.util.Scanner;
 
-import java.time.format.DateTimeFormatter;
-
 public class TaskManager {
     Scanner scanner = new Scanner(System.in, "UTF-8");
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     AuxiliaryMethods auxMethods = new AuxiliaryMethods();
 

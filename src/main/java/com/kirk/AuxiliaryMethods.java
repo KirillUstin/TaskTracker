@@ -1,16 +1,16 @@
 package com.kirk;
 
 import java.util.Scanner;
-
 import java.sql.SQLException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class AuxiliaryMethods {
     Scanner scanner = new Scanner(System.in);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.uuuu").withResolverStyle(ResolverStyle.STRICT);
 
     //вывод меню (для главной функции main)
     public void showMenu(){
@@ -30,97 +30,148 @@ public class AuxiliaryMethods {
     //ввод значения для взаимодействия с консолью (для главной функции main)
     public int inputChoice(){
         Integer choice = 0;
-        String entered_string = null;
-        boolean valid_number = false;
+        boolean isValid = false;
 
-        while(!valid_number){
-            entered_string = scanner.nextLine();
+        while(!isValid){
+            String entered_string = scanner.nextLine();
 
-            choice = parseInputChoice(entered_string);
+            choice = parser(entered_string);
 
-            valid_number = checkChoice(choice);
+            isValid = validator(choice, 0, 7);
         }
         
         return choice;
     }
 
-    public Integer parseInputChoice(String input){
+    //ввод приоритетности
+    public int inputPriority(){
+        boolean isValid = false;
+        Integer priority_number = null;
+
+        while(!isValid){
+            String entereted_string = scanner.nextLine();
+
+            priority_number = parser(entereted_string);
+
+            if(validator(priority_number, 1, 3)){
+                isValid = true;
+            } else{
+                System.out.println("Введите число заново: ");
+            }
+        }
+
+        return (int) priority_number;
+    }
+
+    //парсинг строки, полученной с консоли (для функций inputChoice и inputPriority)
+    public Integer parser(String input){
         Integer parseInt = null;
         
         try{
             parseInt = Integer.parseInt(input);
         } catch(NumberFormatException e){
-            System.out.println("Ошибка! Неверный формат ввода. Введите число от 0 до 7.");
+            System.out.println("Ошибка! Неверный формат ввода. Введите число");
             System.out.println(e.getMessage());
         }
         
         return parseInt;
     }
     
-    //проверка значения для взаимодействия с консолью (для функции inputChoice)
-    public boolean checkChoice(Integer choice){
+    //проверка валидности значения (для функций inputChoice и inputPriority)
+    public boolean validator(Integer choice, int lower_limit, int upper_limit){
         if(choice == null){
             return false;
         }
 
-        if(choice >= 0 && choice <= 7){
+        if(lower_limit > upper_limit){
+            int temp = lower_limit;
+            lower_limit = upper_limit;
+            upper_limit = temp;
+        }
+
+        if(choice >= lower_limit && choice <= upper_limit){
             return true;
         } else{
-            System.out.println("Число не должно быть меньше 0 и больше 7!\nВведите число заново:");
+            System.out.println("Число не должно быть меньше " + lower_limit + " и больше " + upper_limit + "!");
             return false;
         }
     }
-
-    //ввод приоритетности и проверка
-    public int inputAndCheckPriority(){
-        int priority = scanner.nextInt();
-        scanner.nextLine();
-
-        if(priority > 3){
-            System.out.println("Приоритет не может быть выше 3!\nВведите приоритет заново: ");
-            priority = inputAndCheckPriority();
-        } else {
-            return priority;
-        }
-
-        return priority;
-    }
     
-    //ввод даты и проверка формата 
-    public LocalDate inputAndCheckDate(){
-        String input = scanner.nextLine();
+    //ввод даты
+    public LocalDate inputDate(){
+        boolean validInput = true;
+        String entereted_string;
         LocalDate dueDate = null;
+
+        while(validInput){
+            entereted_string = scanner.nextLine();
+
+            dueDate = parserDate(entereted_string);
+
+            if(dueDate != null){
+                validInput = false;
+            } else{
+                System.out.println("Введите дату заново в формате 'дд.мм.гггг': ");
+            }
+        }
         
-        try {
+        return dueDate;
+    }
+
+    //парсинг введеной даты в формате строки
+    public LocalDate parserDate(String input){
+        LocalDate dueDate = null;
+
+        try{
             dueDate = LocalDate.parse(input, formatter);
-        } catch (DateTimeParseException e) {
-            System.out.println("Неверный формат даты!\nВведите дату заново в формате 'дд.мм.гггг': ");
-            dueDate = inputAndCheckDate();
+        }catch(DateTimeParseException e){
+            System.out.println("Неверный формат даты!");
+            System.out.println(e.getMessage());
         }
         
         return dueDate;
     }
     
-    //ввод и проверка выполненности (для функции updateData в этом методе)
-    public boolean inputAndCheckNewCompleted(){
-        String strCompleted = scanner.nextLine();
-        boolean result = false;
-
-        if(strCompleted.length() > 1){
-            System.out.println("Должен быть введен максимум один символ!\nСледуйте формату 'Y/n' и введите выполненность заново: ");
-            return inputAndCheckNewCompleted();
-        } else{
-            if(strCompleted.equalsIgnoreCase("y")){
-                result = true;
-            } else if(strCompleted.equalsIgnoreCase("n")){
-                result = false;
+    //ввод выполненности (для функции updateData в этом методе)
+    public boolean inputNewCompleted(){
+        Boolean result = null;
+        boolean isValid = false;
+        
+        while(!isValid){
+            String strCompleted = scanner.nextLine();
+            result = validatorNewCompleted(strCompleted);
+            
+            if(result == true || result == false){
+                isValid = true;
             } else{
-                System.out.println("Неправильный формат ввода. Пожалуйста, введи выполненность заново в формате 'Y/n': ");
-                return inputAndCheckNewCompleted();
+                System.out.println("Следуйте формату 'Y/n' и введите заново: ");
             }
         }
         
-        return result;
+        return (boolean) result;
+    }
+
+    //проверка валидности введеной строки для указания выполненности задачи
+    public Boolean validatorNewCompleted(String input){
+        if(input == null){
+            return null;
+        }
+
+        input = input.trim();
+
+        if(input.isEmpty() || input.length() > 1){
+            System.out.println("Должен быть введен один символ.");
+            return null;
+        } else{
+            if(input.equalsIgnoreCase("y")){
+                return true;
+            } else if(input.equalsIgnoreCase("n")){
+                return false;
+            } else{
+                System.out.println("Неправильный формат ввода.");
+                return null;
+            }
+        }
     }
 
     //проверка на изменения строк в базе
@@ -151,10 +202,10 @@ public class AuxiliaryMethods {
         String des = scanner.nextLine();
 
         System.out.println("Введите дату, до которой надо выполнить задание (дд.мм.гггг): ");
-        LocalDate dueD = inputAndCheckDate();
+        LocalDate dueD = inputDate();
 
         System.out.println("Введите приоритет задачи \n(1-высший, 2-средний, 3-низший): ");
-        int prior = inputAndCheckPriority();
+        int prior = inputPriority();
 
         boolean compl = false;
 
@@ -167,13 +218,13 @@ public class AuxiliaryMethods {
         String newDes = scanner.nextLine();
 
         System.out.println("Введите новую дату(дд.мм.гггг): ");
-        LocalDate newDate = inputAndCheckDate();
+        LocalDate newDate = inputDate();
 
         System.out.println("Введите новую приоритетность: ");
-        int newPrior = inputAndCheckPriority();
+        int newPrior = inputPriority();
 
         System.out.println("Задача выполнена?(y/n): ");
-        boolean newCompleted = inputAndCheckNewCompleted();
+        boolean newCompleted = inputNewCompleted();
 
         return new Task(title, newDes, newDate, newPrior, newCompleted);
     }
